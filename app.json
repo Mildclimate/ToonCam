@@ -5,11 +5,19 @@
     "scheme": "tooncam",
     "version": "0.1.0",
     "orientation": "portrait",
-    "platforms": ["ios", "android"],
-    "plugins": ["expo-router"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "plugins": [
+      "expo-router",
+      "expo-asset"
+    ],
     "ios": {
       "supportsTablet": true
     },
-    "assetBundlePatterns": ["**/*"]
+    "assetBundlePatterns": [
+      "**/*"
+    ]
   }
 }

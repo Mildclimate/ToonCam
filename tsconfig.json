@@ -5,16 +5,9 @@
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     }
   },
-  "include": [
-    "app",
-    "src"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["app", "src"],
+  "exclude": ["node_modules"]
 }

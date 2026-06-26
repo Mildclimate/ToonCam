@@ -1,11 +1,13 @@
-import { useCameraPermissions } from "expo-camera";
+import { useCameraPermission } from "react-native-vision-camera";
 
 export function useCameraAccess() {
-  const [permission, requestPermission] = useCameraPermissions();
+  const { hasPermission, requestPermission } = useCameraPermission();
 
   return {
-    permission,
+    permission: {
+      granted: hasPermission,
+    },
     requestPermission,
-    isReady: Boolean(permission?.granted),
+    isReady: hasPermission,
   };
 }

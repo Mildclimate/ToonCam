@@ -14,7 +14,18 @@
       "expo-asset"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "ToonCam needs access to your camera to render the live cartoon preview."
+      },
+      "bundleIdentifier": "com.anonymous.tooncam"
+    },
+    "android": {
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.CAMERA"
+      ],
+      "package": "com.anonymous.tooncam"
     },
     "assetBundlePatterns": [
       "**/*"

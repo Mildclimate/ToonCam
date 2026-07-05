@@ -11,7 +11,7 @@ type CameraPreviewProps = {
 };
 
 export function CameraPreview({ device, frameOutput }: CameraPreviewProps) {
-  if (!device) {
+  if (!device || !frameOutput) {
     return (
       <View style={styles.container}>
         <View style={styles.loadingState}>
@@ -30,7 +30,7 @@ export function CameraPreview({ device, frameOutput }: CameraPreviewProps) {
         style={StyleSheet.absoluteFill}
         device={device}
         isActive
-        outputs={frameOutput ? [frameOutput] : []}
+        outputs={[frameOutput]}
       />
       <View style={styles.overlay}>
         <View style={styles.badge}>

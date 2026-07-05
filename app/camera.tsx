@@ -27,8 +27,8 @@ export default function CameraScreen() {
   processFrameRef.current = processFrame;
 
   const handleFrameForScene = useCallback(
-    (w: number, h: number, p: Uint8Array) => {
-      processFrameRef.current(w, h, p);
+    (w: number, h: number, p: number[]) => {
+      processFrameRef.current(w, h, new Uint8Array(p));
     },
     [],
   );

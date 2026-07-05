@@ -15,6 +15,7 @@ const LABEL_COLORS: Record<string, string> = {
   chair: "#dfe6e9",
   "dining table": "#b2bec3",
   bed: "#636e72",
+  tv: "#9b59b6",
 };
 
 const DEFAULT_COLOR = "#74b9ff";

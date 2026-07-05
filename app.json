@@ -5,30 +5,20 @@
     "scheme": "tooncam",
     "version": "0.1.0",
     "orientation": "portrait",
-    "platforms": [
-      "ios",
-      "android"
-    ],
-    "plugins": [
-      "expo-router",
-      "expo-asset"
-    ],
+    "platforms": ["ios", "android"],
+    "plugins": ["expo-router", "expo-asset"],
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
         "NSCameraUsageDescription": "ToonCam needs access to your camera to render the live cartoon preview."
       },
-      "bundleIdentifier": "com.anonymous.tooncam"
+      "bundleIdentifier": "com.anonymous.tooncam",
+      "developmentTeam": "76AJ87NGXC"
     },
     "android": {
-      "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.CAMERA"
-      ],
+      "permissions": ["android.permission.CAMERA", "android.permission.CAMERA"],
       "package": "com.anonymous.tooncam"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ]
+    "assetBundlePatterns": ["**/*"]
   }
 }

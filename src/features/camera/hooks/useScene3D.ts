@@ -33,25 +33,23 @@ export function useScene3D() {
     };
   }, []);
 
+  let tickCount = 0;
   // ── 推理定时器（每 1.5s） ──
   useEffect(() => {
     if (modelStatus !== "ready") return;
 
     const timer = setInterval(() => {
+      tickCount++;
       if (crashGuardRef.current) return;
       const frame = latestFrameRef.current;
       if (!frame) return;
 
       crashGuardRef.current = true;
-      try {
-        const pixelsCopy = new Uint8Array(frame.p.buffer.slice(0));
-        const result = analyzeFrame(pixelsCopy, frame.w, frame.h);
+      const pixelsCopy = frame.p.slice(0);
+      analyzeFrame(pixelsCopy, frame.w, frame.h).then((result) => {
         setObjects(result.objects);
-      } catch (e) {
-        console.error("[useScene3D] inference error:", e);
-      } finally {
-        crashGuardRef.current = false;
-      }
+      });
+      crashGuardRef.current = false;
     }, 1500);
 
     return () => clearInterval(timer);

@@ -1,10 +1,18 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useCallback, useRef } from "react";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Screen } from "@/components/ui/Screen";
 import {
   CameraPreview,
-  FilterPreview,
+  Scene3DView,
   useCameraAccess,
   useCartoonCameraFeed,
+  useScene3D,
 } from "@/features/camera";
 import { useAppStore } from "@/store/useAppStore";
 
@@ -20,12 +28,40 @@ export default function CameraScreen() {
   const filterMode = useAppStore((state) => state.filterMode);
   const setCameraFacing = useAppStore((state) => state.setCameraFacing);
   const setFilterMode = useAppStore((state) => state.setFilterMode);
-  const { cartoonFrame, device, frameOutput } = useCartoonCameraFeed({
+
+  const { objects, modelStatus, processFrame } = useScene3D({ filterMode });
+
+  const processFrameRef = useRef(processFrame);
+  processFrameRef.current = processFrame;
+
+  const handleFrameForScene = useCallback(
+    (w: number, h: number, p: Uint8Array) => {
+      console.log("[camera] handleFrameForScene called:", w, h, p?.length);
+      processFrameRef.current(w, h, p);
+    },
+    [],
+  );
+
+  const { device, frameOutput } = useCartoonCameraFeed({
     cameraFacing,
     filterMode,
+    onFrameForScene: handleFrameForScene,
   });
 
-  if (!permission?.granted) {
+  // 权限查询中 - 显示加载态，避免闪烁权限申请页
+  if (permission.granted === null) {
+    return (
+      <Screen>
+        <View style={styles.permissionContainer}>
+          <ActivityIndicator size="large" color="#77aaff" />
+          <Text style={styles.loadingText}>Checking camera access...</Text>
+        </View>
+      </Screen>
+    );
+  }
+
+  // 权限未授权
+  if (!permission.granted) {
     return (
       <Screen>
         <View style={styles.permissionContainer}>
@@ -53,10 +89,10 @@ export default function CameraScreen() {
     <Screen>
       <View style={styles.container}>
         <View style={styles.header}>
-          <View>
+          <View style={styles.headerLeft}>
             <Text style={styles.title}>Camera Flow</Text>
             <Text style={styles.subtitle}>
-              上半是真实摄像头，下半是实时卡通渲染位。需要 development build。
+              上半是真实摄像头，下半是 3D 场景渲染。需要 development build。
             </Text>
           </View>
 
@@ -74,9 +110,9 @@ export default function CameraScreen() {
           <View style={styles.previewCard}>
             <CameraPreview device={device} frameOutput={frameOutput} />
           </View>
-
+          {/* 重点: 三维场景 */}
           <View style={styles.previewCard}>
-            <FilterPreview frame={cartoonFrame} />
+            <Scene3DView objects={objects} status={modelStatus} />
           </View>
         </View>
 
@@ -153,6 +189,11 @@ const styles = StyleSheet.create({
     color: "#0b0f14",
     fontWeight: "700",
   },
+  loadingText: {
+    marginTop: 16,
+    color: "#94a3b8",
+    fontSize: 14,
+  },
   header: {
     flexDirection: "row",
     alignItems: "flex-start",
@@ -218,5 +259,8 @@ const styles = StyleSheet.create({
   },
   modeChipTextActive: {
     color: "#ffffff",
+  },
+  headerLeft: {
+    flexShrink: 1,
   },
 });

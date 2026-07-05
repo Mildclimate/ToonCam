@@ -102,10 +102,9 @@ src/features/camera/
 当前 `camera` 功能说明：
 
 - `components/CameraPreview.tsx`：摄像头预览占位组件
-- `components/FilterPreview.tsx`：滤镜预览占位组件
 - `hooks/useCameraPermissions.ts`：相机权限请求封装
-- `services/frameProcessor.ts`：帧处理管道的占位入口
-- `types.ts`：摄像头与滤镜模式类型
+- `services/sceneAnalyzer.ts`：COCO-SSD 模型推理
+- `types.ts`：摄像头类型
 
 ---
 

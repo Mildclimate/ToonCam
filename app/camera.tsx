@@ -11,44 +11,34 @@ import {
   CameraPreview,
   Scene3DView,
   useCameraAccess,
-  useCartoonCameraFeed,
+  useCameraFeed,
   useScene3D,
 } from "@/features/camera";
 import { useAppStore } from "@/store/useAppStore";
 
-const FILTER_OPTIONS = [
-  { label: "Original", value: "original" as const },
-  { label: "Soft Toon", value: "toon-soft" as const },
-  { label: "Strong Toon", value: "toon-strong" as const },
-];
-
 export default function CameraScreen() {
   const { permission, requestPermission } = useCameraAccess();
   const cameraFacing = useAppStore((state) => state.cameraFacing);
-  const filterMode = useAppStore((state) => state.filterMode);
   const setCameraFacing = useAppStore((state) => state.setCameraFacing);
-  const setFilterMode = useAppStore((state) => state.setFilterMode);
 
-  const { objects, modelStatus, processFrame } = useScene3D({ filterMode });
+  const { objects, modelStatus, processFrame } = useScene3D();
 
   const processFrameRef = useRef(processFrame);
   processFrameRef.current = processFrame;
 
   const handleFrameForScene = useCallback(
     (w: number, h: number, p: Uint8Array) => {
-      console.log("[camera] handleFrameForScene called:", w, h, p?.length);
       processFrameRef.current(w, h, p);
     },
     [],
   );
 
-  const { device, frameOutput } = useCartoonCameraFeed({
+  const { device, frameOutput } = useCameraFeed({
     cameraFacing,
-    filterMode,
     onFrameForScene: handleFrameForScene,
   });
 
-  // 权限查询中 - 显示加载态，避免闪烁权限申请页
+  // 权限查询中
   if (permission.granted === null) {
     return (
       <Screen>
@@ -70,8 +60,8 @@ export default function CameraScreen() {
               Camera permission required
             </Text>
             <Text style={styles.permissionSubtitle}>
-              打开摄像头权限后，才能进入上下分屏的 camera flow。这个页面需要
-              development build，不支持 Expo Go。
+              打开摄像头权限后，才能进入上下分屏的 camera flow。需要 development
+              build。
             </Text>
             <Pressable
               style={styles.permissionButton}
@@ -90,9 +80,9 @@ export default function CameraScreen() {
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.title}>Camera Flow</Text>
+            <Text style={styles.title}>Camera + Detection</Text>
             <Text style={styles.subtitle}>
-              上半是真实摄像头，下半是 3D 场景渲染。需要 development build。
+              上半原生摄像头，下半 3D 物体检测。需要 development build。
             </Text>
           </View>
 
@@ -110,33 +100,9 @@ export default function CameraScreen() {
           <View style={styles.previewCard}>
             <CameraPreview device={device} frameOutput={frameOutput} />
           </View>
-          {/* 重点: 三维场景 */}
           <View style={styles.previewCard}>
             <Scene3DView objects={objects} status={modelStatus} />
           </View>
-        </View>
-
-        <View style={styles.toolbar}>
-          {FILTER_OPTIONS.map((option) => {
-            const isActive = option.value === filterMode;
-
-            return (
-              <Pressable
-                key={option.value}
-                style={[styles.modeChip, isActive && styles.modeChipActive]}
-                onPress={() => setFilterMode(option.value)}
-              >
-                <Text
-                  style={[
-                    styles.modeChipText,
-                    isActive && styles.modeChipTextActive,
-                  ]}
-                >
-                  {option.label}
-                </Text>
-              </Pressable>
-            );
-          })}
         </View>
       </View>
     </Screen>
@@ -198,69 +164,41 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    gap: 12,
+  },
+  headerLeft: {
+    flex: 1,
+    marginRight: 12,
   },
   title: {
     color: "#ffffff",
-    fontSize: 30,
+    fontSize: 22,
     fontWeight: "700",
   },
   subtitle: {
-    marginTop: 12,
-    color: "#cbd5e1",
-    fontSize: 14,
+    marginTop: 4,
+    color: "#94a3b8",
+    fontSize: 13,
+    lineHeight: 18,
   },
   flipButton: {
     borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.16)",
-    backgroundColor: "rgba(17, 24, 39, 0.9)",
+    backgroundColor: "rgba(119, 170, 255, 0.18)",
     paddingHorizontal: 14,
     paddingVertical: 10,
   },
   flipButtonText: {
-    color: "#ffffff",
-    fontWeight: "600",
+    color: "#77aaff",
+    fontWeight: "700",
   },
   previewStack: {
     flex: 1,
-    gap: 12,
+    gap: 8,
   },
   previewCard: {
     flex: 1,
-    minHeight: 180,
-    borderRadius: 28,
+    borderRadius: 20,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: "rgba(148, 163, 184, 0.16)",
-    backgroundColor: "#111827",
-  },
-  toolbar: {
-    flexDirection: "row",
-    gap: 10,
-    flexWrap: "wrap",
-  },
-  modeChip: {
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "rgba(148, 163, 184, 0.2)",
-    backgroundColor: "rgba(15, 23, 42, 0.82)",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  modeChipActive: {
-    borderColor: "#77aaff",
-    backgroundColor: "rgba(119, 170, 255, 0.18)",
-  },
-  modeChipText: {
-    color: "#cbd5e1",
-    fontSize: 13,
-    fontWeight: "600",
-  },
-  modeChipTextActive: {
-    color: "#ffffff",
-  },
-  headerLeft: {
-    flexShrink: 1,
+    borderColor: "rgba(148, 163, 184, 0.15)",
   },
 });

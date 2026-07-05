@@ -1,1 +1,1 @@
-export type { CameraFacing, FilterMode } from "../features/camera/types";
+export type { CameraFacing } from "../features/camera/types";
